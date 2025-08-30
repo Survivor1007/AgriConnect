@@ -6,6 +6,7 @@ from .views import (
     OrderViewSet,
     WeatherReportViewSet,
     FarmingUpdateViewSet,
+    UserSignUpView
 )
 
 # Create a router
@@ -16,7 +17,9 @@ router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'weather-reports', WeatherReportViewSet, basename='weather-report')
 router.register(r'updates', FarmingUpdateViewSet, basename='update')
 
+
 # Include router URLs
 urlpatterns = [
     path('', include(router.urls)),
+    
 ]

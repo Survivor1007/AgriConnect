@@ -1,8 +1,9 @@
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, generics,status
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from .models import FarmingUpdate,FarmProduct,Order, WeatherReport
-from .serializers import UserSerializer,FarmingUpdateSerializer,FarmProductSerializer,OrderSerializer,WeatherReportSerializer
+from .serializers import UserSerializer,FarmingUpdateSerializer,FarmProductSerializer,OrderSerializer,WeatherReportSerializer,SignUpSerializer
 
 User = get_user_model()
 
@@ -68,3 +69,27 @@ class FarmingUpdateViewSet(viewsets.ReadOnlyModelViewSet):  # read-only
     queryset = FarmingUpdate.objects.all()
     serializer_class = FarmingUpdateSerializer
     permission_classes = [permissions.AllowAny]  # anyone can see farming updates
+
+
+class UserSignUpView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = SignUpSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        user = serializer.save()
+
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            "user" : serializer.data,
+            "refresh" : str(refresh),
+            "access" : str(refresh.access_token)
+
+        },status=status.HTTP_201_CREATED
+
+        )
