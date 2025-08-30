@@ -1,9 +1,13 @@
 from rest_framework import permissions, viewsets, generics,status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from .models import FarmingUpdate,FarmProduct,Order, WeatherReport
 from .serializers import UserSerializer,FarmingUpdateSerializer,FarmProductSerializer,OrderSerializer,WeatherReportSerializer,SignUpSerializer
+from django.conf import settings
+import requests
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -60,6 +64,40 @@ class WeatherReportViewSet(viewsets.ReadOnlyModelViewSet):  # read-only
     queryset = WeatherReport.objects.all()
     serializer_class = WeatherReportSerializer
     permission_classes = [permissions.AllowAny]  # anyone can see weather reports
+
+    @action(detail=False, methods=["post"])
+    def fetch(self, request):
+        """Fetch weather from OpenWeather API and store it."""
+        location = request.data.get("location")
+        if not location:
+            return Response({"error": "Location is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        api_key = settings.OPENWEATHER_API_KEY
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
+
+        try:
+            resp = requests.get(url)
+            data = resp.json()
+
+            if resp.status_code != 200:
+                return Response(data, status=resp.status_code)
+
+            # Extract values
+            report = WeatherReport.objects.create(
+                location=location,
+                report_date=timezone.now().date().isoformat(),  # UNIX timestamp, we’ll convert below
+                temperature=data["main"]["temp"],
+                humidity=data["main"]["humidity"],
+                rainfall=data.get("rain", {}).get("1h", 0.0),
+                conditions=data["weather"][0]["description"]
+            )
+
+            serializer = WeatherReportSerializer(report)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 
 # --------------------------

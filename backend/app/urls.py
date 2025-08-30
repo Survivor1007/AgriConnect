@@ -16,6 +16,7 @@ router.register(r'products', FarmerProductViewSet, basename='product')
 router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'weather-reports', WeatherReportViewSet, basename='weather-report')
 router.register(r'updates', FarmingUpdateViewSet, basename='update')
+router.register(r'weatherreports',WeatherReportViewSet, basename="weatherreport")
 
 
 # Include router URLs
