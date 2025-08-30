@@ -1,0 +1,96 @@
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+from .models import FarmProduct, Order, WeatherReport, FarmingUpdate
+
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+      class Meta :
+            model = User
+            fields = [
+                  "id",
+                  "username",
+                  "email",
+                  "is_farmer",
+                  "is_buyer",
+                  "phone_number",
+                  "location"
+
+            ]
+
+class FarmProductSerializer(serializers.ModelSerializer):
+    farmer = UserSerializer(read_only=True)  # nested farmer info
+
+    class Meta:
+        model = FarmProduct
+        fields = [
+            "id",
+            "farmer",
+            "name",
+            "description",
+            "quantity",
+            "unit",
+            "price_per_unit",
+            "available",
+            "created_at",
+        ]
+
+
+# --------------------------
+# Order Serializer
+# --------------------------
+class OrderSerializer(serializers.ModelSerializer):
+    buyer = UserSerializer(read_only=True)
+    product = FarmProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=FarmProduct.objects.all(),
+        source="product",
+        write_only=True
+    )
+
+    class Meta:
+        model = Order
+        fields = [
+            "id",
+            "buyer",
+            "product",
+            "product_id",   # write-only field for creating orders
+            "quantity",
+            "total_price",
+            "status",
+            "created_at",
+        ]
+
+
+# --------------------------
+# Weather Report Serializer
+# --------------------------
+class WeatherReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeatherReport
+        fields = [
+            "id",
+            "location",
+            "report_date",
+            "temperature",
+            "humidity",
+            "rainfall",
+            "conditions",
+            "created_at",
+        ]
+
+
+# --------------------------
+# Farming Update Serializer
+# --------------------------
+class FarmingUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FarmingUpdate
+        fields = [
+            "id",
+            "title",
+            "content",
+            "category",
+            "published_at",
+        ]
