@@ -1,4 +1,8 @@
-# --- Python ---
+# ==============================
+# === Python / Django Backend ===
+# ==============================
+
+# Python cache
 __pycache__/
 *.py[cod]
 *.pyo
@@ -8,12 +12,12 @@ __pycache__/
 *.egg-info/
 .eggs/
 
-# --- Virtual environments ---
+# Virtual environments
 venv/
 env/
 .venv/
 
-# --- Django specific ---
+# Django specific
 *.log
 *.pot
 *.pyc
@@ -25,16 +29,57 @@ static/
 # Ignore Django migrations cache (but keep migration files)
 */migrations/__pycache__/
 
-# --- Environment & secrets ---
+# Environment & secrets
 .env
 *.env
 
-# --- IDEs / Editors ---
+# ==============================
+# === Flutter / Dart Frontend ===
+# ==============================
+
+# Flutter / Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-versions
+
+# Flutter build outputs
+build/
+coverage/
+pubspec.lock
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/App.framework
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Android
+android/.gradle/
+android/local.properties
+android/app/google-services.json
+android/key.properties
+
+# Web
+web/.dart_tool/
+web/.firebase/
+
+# ==============================
+# === IDEs / Editors ===
+# ==============================
+
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# --- OS Specific ---
+# ==============================
+# === OS Specific ===
+# ==============================
+
 .DS_Store
 Thumbs.db
