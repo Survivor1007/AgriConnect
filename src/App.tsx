@@ -6,29 +6,29 @@ import Login from "./pages/Login";
 import Orders from "./pages/Orders";
 import Products from "./pages/Products";
 import Signup from "./pages/Signup";
-
+import { AuthProvider } from "./context/authContext";
 
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
+      <AuthProvider> {/* Correct placement: Wrap the Routes */}
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
 
-        {/* Main Page Content */}
-        <main className="flex-grow p-6">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login/>}></Route>
-            <Route path="/signup" element={<Signup/>}></Route>
-            <Route path="/products" element={<Products/>}></Route>
-            <Route path="/orders" element={<Orders/>}></Route>
+          {/* Main Page Content */}
+          <main className="flex-grow p-6">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/orders" element={<Orders />} />
+            </Routes>
+          </main>
 
-            
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
+          <Footer />
+        </div>
+      </AuthProvider>
     </Router>
   );
 }
