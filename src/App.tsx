@@ -6,6 +6,9 @@ import Login from "./pages/Login";
 import Orders from "./pages/Orders";
 import Products from "./pages/Products";
 import Signup from "./pages/Signup";
+import Weather from "./pages/Weather";
+import Updates from "./pages/Updates";
+import AskAI from "./pages/AskAI";
 import { AuthProvider } from "./context/authContext";
 
 function App() {
@@ -23,6 +26,9 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/products" element={<Products />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path ="/weather" element={<Weather />}></Route>
+              <Route path = "/updates" element={<Updates />}></Route>
+              <Route path = "/ask-ai" element={<AskAI/>}></Route>
             </Routes>
           </main>
 
