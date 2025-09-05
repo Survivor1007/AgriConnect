@@ -123,6 +123,15 @@ const Products = () => {
 
   // Place order (buyer only)
 const handleOrder = async (productId: number, quantity: number) => {
+  const product = products.find((p) => p.id === productId);
+  if (!product) return;
+
+  // ✅ Prevent ordering more than available
+  if (quantity > product.quantity) {
+    alert(`You can only order up to ${product.quantity} ${product.unit}`);
+    return;
+  }
+
   const token = localStorage.getItem("accessToken");
   if (!token) {
     navigate("/login");
@@ -137,8 +146,8 @@ const handleOrder = async (productId: number, quantity: number) => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        product_id: productId,  // ✅ must match serializer
-        quantity: quantity,     // ✅ required
+        product_id: productId,
+        quantity: quantity,
       }),
     });
 
@@ -152,16 +161,20 @@ const handleOrder = async (productId: number, quantity: number) => {
     const newOrder = await res.json();
     console.log("Order placed:", newOrder);
 
-    // ✅ reduce product quantity in state
+    // ✅ reduce product quantity safely
     setProducts((prev) =>
       prev.map((p) =>
         p.id === productId ? { ...p, quantity: p.quantity - quantity } : p
       )
     );
+
+    // ✅ reset input field for that product
+    setOrderQuantity((prev) => ({ ...prev, [productId]: 0 }));
   } catch (err: any) {
     setError(err.message);
   }
 };
+
 
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
