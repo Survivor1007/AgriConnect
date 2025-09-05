@@ -6,6 +6,15 @@ export interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   login: (username: string, password: string) => Promise<void>;
+  signup: (
+    username: string,
+    password: string,
+    email: string,
+    phone: string,
+    location: string,
+    isFarmer: boolean,
+    isBuyer: boolean
+  ) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   refresh: () => Promise<string | null>;
@@ -30,11 +39,10 @@ interface AuthProviderProps {
 
 // AuthProvider component to wrap the application and provide authentication state
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // State to hold the access and refresh tokens
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  // Login function that makes a POST request to your backend
+  // Login function
   const login = async (username: string, password: string) => {
     try {
       const response = await fetch('http://localhost:8000/api/token/', {
@@ -48,7 +56,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const data = await response.json();
-      // Assume the backend returns a JSON object with 'access_token' and 'refresh_token'
       setAccessToken(data.access_token);
       setRefreshToken(data.refresh_token);
 
@@ -59,14 +66,59 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Logout function to clear the tokens and reset the state
+  // ✅ Signup function
+  const signup = async (
+    username: string,
+    password: string,
+    email: string,
+    phone: string,
+    location: string,
+    isFarmer: boolean,
+    isBuyer: boolean
+  ) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/signup/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          password,
+          email,
+          phone,
+          location,
+          is_farmer: isFarmer,
+          is_buyer: isBuyer,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Signup failed. Please check your details.');
+      }
+
+      const data = await response.json();
+
+      // if backend returns tokens immediately after signup
+      if (data.access && data.refresh) {
+        setAccessToken(data.access);
+        setRefreshToken(data.refresh);
+        console.log('Signup successful! User registered and tokens received.');
+      } else {
+        console.log('Signup successful! Please login.');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
+    }
+  };
+
+  // Logout function
   const logout = () => {
     setAccessToken(null);
     setRefreshToken(null);
     console.log('User logged out.');
   };
 
-  // Refresh function to get a new access token using the refresh token
+  // Refresh function
   const refresh = async (): Promise<string | null> => {
     if (!refreshToken) {
       logout();
@@ -90,19 +142,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return data.access;
     } catch (error) {
       console.error('Token refresh error:', error);
-      logout(); // Force logout if refresh fails
+      logout();
       return null;
     }
   };
 
-  // Check if the user is authenticated based on the presence of an access token
   const isAuthenticated = !!accessToken;
 
-  // The value provided by the context to its children
   const value = {
     accessToken,
     refreshToken,
     login,
+    signup, // ✅ exposed to context
     logout,
     isAuthenticated,
     refresh,

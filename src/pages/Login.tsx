@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/authContext';
 import { setupInterceptors } from '../api/axios';
-import Products from './Products';
 import {  useNavigate } from 'react-router-dom';
 
 // Main App component which acts as the entire application
