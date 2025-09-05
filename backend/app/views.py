@@ -20,6 +20,21 @@ class UserViewSet(viewsets.ModelViewSet):
 
       def get_queryset(self):
             return User.objects.filter(id = self.request.user.id)
+
+      @action(detail=False, methods=["get"])
+      def dashboard(self, request):
+        user = request.user
+        product_count = FarmProduct.objects.filter(farmer=user).count()
+        order_count = Order.objects.filter(buyer=user).count()
+
+        return Response({
+            "username": user.username,
+            "email": user.email,
+            "is_farmer": getattr(user, "is_farmer", False),
+            "is_buyer": getattr(user, "is_buyer", False),
+            "products_count": product_count,
+            "orders_count": order_count,
+        })
       
 
 class FarmerProductViewSet(viewsets.ModelViewSet):

@@ -61,6 +61,27 @@ class OrderSerializer(serializers.ModelSerializer):
             "status",
             "created_at",
         ]
+        read_only_fields = ["total_price", "status", "created_at"]
+
+    def create(self, validated_data):
+        product = validated_data["product"]
+        quantity = validated_data["quantity"]
+
+        total_price = product.price_per_unit * quantity
+        order = Order.objects.create(
+            buyer=self.context["request"].user,
+            product=product,
+            quantity=quantity,
+            total_price=total_price,
+            status="pending"
+        )
+
+        # reduce product stock
+        product.quantity -= quantity
+        product.save()
+
+        return order
+    
 
 
 # --------------------------
