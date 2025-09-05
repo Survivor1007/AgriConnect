@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
-from .models import User,Order,FarmProduct,WeatherReport
+from .models import User,Order,FarmProduct,WeatherReport,FarmingUpdate
 
 
 @admin.register(User)   # instead of admin.site.register(User, CustomUserAdmin)
@@ -40,4 +40,8 @@ class WeatherReportAdmin(admin.ModelAdmin):
     list_display = ("location", "report_date", "temperature","humidity","rainfall","conditions")
     search_fields = ("location", "temperature","humidity")
 
-
+@admin.register(FarmingUpdate)
+class FarmingUpdateAdmin(admin.ModelAdmin):
+    model = FarmingUpdate
+    list_display= ("title", "category",)
+    search_fields = ("title",)

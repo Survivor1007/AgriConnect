@@ -1,4 +1,8 @@
-# --- Python ---
+# ==============================
+# === Python / Django Backend ===
+# ==============================
+
+# Python cache
 __pycache__/
 *.py[cod]
 *.pyo
@@ -8,12 +12,12 @@ __pycache__/
 *.egg-info/
 .eggs/
 
-# --- Virtual environments ---
+# Virtual environments
 venv/
 env/
 .venv/
 
-# --- Django specific ---
+# Django specific
 *.log
 *.pot
 *.pyc
@@ -25,16 +29,52 @@ static/
 # Ignore Django migrations cache (but keep migration files)
 */migrations/__pycache__/
 
-# --- Environment & secrets ---
+# Environment & secrets
 .env
 *.env
 
-# --- IDEs / Editors ---
+# ==============================
+# === Flutter / Dart Frontend ===
+# ==============================
+
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub-cache/
+build/
+flutter_export_environment.sh
+
+# Android related
+**/android/**/gradle-wrapper.jar
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/key.properties
+**/android/app/*.keystore
+**/android/app/*.jks
+
+# iOS/macOS related
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/macos/Pods/
+**/macos/.symlinks/
+**/macos/Flutter/ephemeral/
+
+# VS Code & IntelliJ
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# --- OS Specific ---
-.DS_Store
-Thumbs.db
+# Misc
+*.iml
+*.log
+*.tmp
+*.lock
+*.DS_Store

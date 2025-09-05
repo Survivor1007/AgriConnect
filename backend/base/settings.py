@@ -30,12 +30,12 @@ environ.Env.read_env(os.path.join(BASE_DIR,".env"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-_!$)v1jc*ovj3#0-5)5e9&f-wc4p(!#jy=+tf&3rd8kw^&#szv"
-
+SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -50,11 +50,13 @@ INSTALLED_APPS = [
     "app",
     "rest_framework",
     "rest_framework_simplejwt",
+    "corsheaders",
 ]
 
 AUTH_USER_MODEL = 'app.User'
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -63,6 +65,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = "base.urls"
 
@@ -101,7 +105,7 @@ DATABASES = {
 }
 
 OPENWEATHER_API_KEY = env("OPENWEATHER_API_KEY")
-
+OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 REST_FRAMEWORK = {
       'DEFAULT_AUTHENTICATION_CLASSES' :( 

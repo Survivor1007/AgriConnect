@@ -8,6 +8,8 @@ from .serializers import UserSerializer,FarmingUpdateSerializer,FarmProductSeria
 from django.conf import settings
 import requests
 from django.utils import timezone
+from rest_framework.views import APIView
+import openai
 
 User = get_user_model()
 
@@ -131,3 +133,31 @@ class UserSignUpView(generics.CreateAPIView):
         },status=status.HTTP_201_CREATED
 
         )
+    
+
+class AskAIView(APIView):
+    permission_classes = [permissions.AllowAny]  # allow all, or change to IsAuthenticated if needed
+
+    def post(self, request):
+        question = request.data.get("question")
+        if not question:
+            return Response({"error": "Question is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Call OpenAI API
+            client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",  # lightweight + fast
+                messages=[
+                    {"role": "system", "content": "You are AgriConnect AI, helping farmers with agriculture-related queries."},
+                    {"role": "user", "content": question},
+                ],
+                max_tokens=300
+            )
+
+            answer = response.choices[0].message.content
+
+            return Response({"question": question, "answer": answer}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

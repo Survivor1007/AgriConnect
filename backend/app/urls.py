@@ -6,7 +6,8 @@ from .views import (
     OrderViewSet,
     WeatherReportViewSet,
     FarmingUpdateViewSet,
-    UserSignUpView
+    UserSignUpView,
+    AskAIView
 )
 
 # Create a router
@@ -21,6 +22,8 @@ router.register(r'weatherreports',WeatherReportViewSet, basename="weatherreport"
 
 # Include router URLs
 urlpatterns = [
+    path("ask-ai/", AskAIView.as_view(), name="ask-ai"),  
     path('', include(router.urls)),
+    
     
 ]
