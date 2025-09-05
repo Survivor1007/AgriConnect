@@ -9,6 +9,7 @@ import Signup from "./pages/Signup";
 import Weather from "./pages/Weather";
 import Updates from "./pages/Updates";
 import AskAI from "./pages/AskAI";
+import Dashboard from "./pages/Dashboard";
 import { AuthProvider } from "./context/authContext";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
               <Route path ="/weather" element={<Weather />}></Route>
               <Route path = "/updates" element={<Updates />}></Route>
               <Route path = "/ask-ai" element={<AskAI/>}></Route>
+              <Route path = "/dashboard" element={<Dashboard/>}></Route>
             </Routes>
           </main>
 

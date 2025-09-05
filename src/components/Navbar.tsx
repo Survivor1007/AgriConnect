@@ -20,8 +20,8 @@ const Navbar = () => {
         <NavLink to="/" className={linkClasses}>Home</NavLink>
         <NavLink to="/login" className={linkClasses}>Login</NavLink>
         <NavLink to="/signup" className={linkClasses}>Sign Up</NavLink>
-        <NavLink to="/orders" className={linkClasses}>Orders</NavLink>
         <NavLink to="/products" className={linkClasses}>Products</NavLink>
+        <NavLink to="/orders" className={linkClasses}>Orders</NavLink>
         <NavLink to="/weather" className={linkClasses}>Weather</NavLink>
         <NavLink to="/updates" className={linkClasses}>Updates</NavLink>
         <NavLink to="/ask-ai" className={linkClasses}>Ask AI</NavLink>
