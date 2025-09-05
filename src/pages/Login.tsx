@@ -18,11 +18,7 @@ const Login = () => {
     setupInterceptors(auth);
   },[auth]);
 
-  useEffect(() => {
-    if(auth.isAuthenticated){
-      navigate('/products',{replace:true});
-    }
-  },[auth.isAuthenticated,navigate]);
+  
 
   // Function to handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

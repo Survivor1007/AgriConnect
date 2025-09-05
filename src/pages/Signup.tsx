@@ -20,11 +20,7 @@ const Signup = () => {
     setupInterceptors(auth);
   }, [auth]);
 
-  useEffect(() => {
-    if (auth.isAuthenticated) {
-      navigate('/products', { replace: true });
-    }
-  }, [auth.isAuthenticated, navigate]);
+ 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
