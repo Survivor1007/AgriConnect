@@ -27,6 +27,7 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // Form state (only for farmers)
   const [formData, setFormData] = useState({
@@ -180,36 +181,45 @@ const handleOrder = async (productId: number, quantity: number) => {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (error) return <p className="text-red-500 text-center">{error}</p>;
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Products</h1>
+   return (
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-extrabold mb-8 text-gray-800 tracking-tight">
+        Products
+      </h1>
 
       {/* Product List */}
-      <div className="mb-8">
+      <div className="mb-12">
         {products.length === 0 ? (
-          <p>No products found.</p>
+          <p className="text-gray-500 text-lg">No products found.</p>
         ) : (
-          <ul className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((p) => (
-              <li
+              <div
                 key={p.id}
-                className="border p-4 rounded-lg shadow-md bg-white"
+                className="border rounded-2xl shadow-sm hover:shadow-lg transition bg-white p-6 flex flex-col justify-between"
               >
-                <h2 className="text-lg font-semibold">{p.name}</h2>
-                <p>{p.description}</p>
-                <p>
-                  <span className="font-medium">Quantity:</span> {p.quantity} {p.unit}
-                </p>
-                <p>
-                  <span className="font-medium">Price:</span> ₹{p.price_per_unit} per {p.unit}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Added on {new Date(p.created_at).toLocaleDateString()}
-                </p>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-800">{p.name}</h2>
+                  <p className="text-gray-600 mt-2">{p.description}</p>
+
+                  <div className="mt-4 space-y-1">
+                    <p className="text-gray-700">
+                      <span className="font-medium">Quantity:</span>{" "}
+                      {p.quantity} {p.unit}
+                    </p>
+                    <p className="text-gray-700">
+                      <span className="font-medium">Price:</span> ₹
+                      {p.price_per_unit} per {p.unit}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Added on {new Date(p.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
 
                 {/* Buyer can order */}
                 {userData?.is_buyer && (
-                  <div className="mt-3">
+                  <div className="mt-5 flex items-center">
                     <input
                       type="number"
                       min="1"
@@ -218,88 +228,139 @@ const handleOrder = async (productId: number, quantity: number) => {
                       onChange={(e) =>
                         handleOrderChange(p.id!, parseInt(e.target.value))
                       }
-                      className="w-24 p-2 border rounded mr-2"
+                      className="w-24 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mr-3"
                       placeholder="Qty"
                     />
                     <button
-  onClick={() => handleOrder(p.id!, orderQuantity[p.id!] || 1)}
-  className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
->
-  Order
-</button>
-
+                      onClick={() =>
+                        handleOrder(p.id!, orderQuantity[p.id!] || 1)
+                      }
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition"
+                    >
+                      Order
+                    </button>
                   </div>
                 )}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
-      {/* Add Product Form (Farmer only) */}
+      {/* Add Product Button & Form (Farmer only) */}
       {userData?.is_farmer && (
-        <form
-          onSubmit={handleSubmit}
-          className="max-w-md bg-gray-100 p-6 rounded-lg shadow-lg"
-        >
-          <h2 className="text-xl font-semibold mb-4">Add Product</h2>
+        <div className="max-w-lg mx-auto">
+          {!showAddForm ? (
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold shadow-md transition"
+            >
+              + Add Product
+            </button>
+          ) : (
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white p-8 rounded-2xl shadow-lg border"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Add New Product
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(false)}
+                  className="text-red-500 hover:text-red-700 text-sm font-medium"
+                >
+                  ✕ Close
+                </button>
+              </div>
 
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border rounded"
-            required
-          />
+              <div className="space-y-5">
+                <div>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter product name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Example: Tomatoes, Rice, Milk
+                  </p>
+                </div>
 
-          <input
-            type="number"
-            name="quantity"
-            placeholder="Quantity"
-            value={formData.quantity}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border rounded"
-            required
-          />
+                <div>
+                  <input
+                    type="number"
+                    name="quantity"
+                    placeholder="Enter available quantity"
+                    value={formData.quantity}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter how much stock you have (e.g., 100)
+                  </p>
+                </div>
 
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border rounded"
-            required
-          />
+                <div>
+                  <textarea
+                    name="description"
+                    placeholder="Enter product description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Example: Freshly harvested organic tomatoes
+                  </p>
+                </div>
 
-          <input
-            type="number"
-            name="price_per_unit"
-            placeholder="Price per unit"
-            value={formData.price_per_unit}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border rounded"
-            required
-          />
+                <div>
+                  <input
+                    type="number"
+                    name="price_per_unit"
+                    placeholder="Enter price per unit"
+                    value={formData.price_per_unit}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Example: 50 (for ₹50 per kg/litre)
+                  </p>
+                </div>
 
-          <input
-            type="text"
-            name="unit"
-            placeholder="Unit (kg, litre, etc.)"
-            value={formData.unit}
-            onChange={handleChange}
-            className="w-full p-2 mb-3 border rounded"
-            required
-          />
+                <div>
+                  <input
+                    type="text"
+                    name="unit"
+                    placeholder="Enter unit (kg, litre, etc.)"
+                    value={formData.unit}
+                    onChange={handleChange}
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Example: kg, litre, dozen
+                  </p>
+                </div>
 
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
-          >
-            Add Product
-          </button>
-        </form>
+                <button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold shadow-md transition"
+                >
+                  ✅ Submit Product
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       )}
     </div>
   );

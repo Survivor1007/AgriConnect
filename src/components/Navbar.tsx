@@ -26,6 +26,7 @@ const Navbar = () => {
         <NavLink to="/updates" className={linkClasses}>Updates</NavLink>
         <NavLink to="/ask-ai" className={linkClasses}>Ask AI</NavLink>
         <NavLink to="/dashboard" className={linkClasses}>Dashboard</NavLink>
+        <NavLink to="/logout" className={linkClasses}>Logout</NavLink>
       </div>
     </nav>
   );

@@ -1,4 +1,16 @@
 import { useEffect, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from "recharts";
 
 interface DashboardData {
   username: string;
@@ -31,7 +43,6 @@ const Dashboard = () => {
         if (!res.ok) throw new Error("Failed to load dashboard data");
 
         const result = await res.json();
-        console.log(result);
         setData(result);
       } catch (err: any) {
         setError(err.message);
@@ -46,14 +57,30 @@ const Dashboard = () => {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
+  // Mock buyer orders (replace with API when available)
+  const buyerOrders = [
+    { date: "2025-09-01", orders: 2 },
+    { date: "2025-09-02", orders: 5 },
+    { date: "2025-09-03", orders: 1 },
+    { date: "2025-09-04", orders: 3 },
+    { date: "2025-09-07", orders: 3 },
+  ];
+
+  // Data for farmer bar chart
+  const farmerData = [
+    { name: "Products", count: data?.products_count || 0 },
+    { name: "Orders", count: data?.orders_count || 0 },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-100 flex items-center justify-center p-6">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-4xl">
         <h1 className="text-3xl font-bold text-green-800 mb-6 text-center">
           User Dashboard
         </h1>
 
-        <div className="space-y-4">
+        {/* User Info */}
+        <div className="grid md:grid-cols-2 gap-6 mb-10">
           <div className="p-4 bg-green-50 rounded-lg shadow-sm">
             <h2 className="font-semibold text-gray-700">👤 Username</h2>
             <p className="text-gray-900">{data?.username}</p>
@@ -75,15 +102,57 @@ const Dashboard = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-green-100 rounded-lg text-center shadow-md">
               <h3 className="text-lg font-semibold text-green-900">Products</h3>
-              <p className="text-2xl font-bold text-green-700">{data?.products_count}</p>
+              <p className="text-2xl font-bold text-green-700">
+                {data?.products_count}
+              </p>
             </div>
 
             <div className="p-4 bg-green-100 rounded-lg text-center shadow-md">
               <h3 className="text-lg font-semibold text-green-900">Orders</h3>
-              <p className="text-2xl font-bold text-green-700">{data?.orders_count}</p>
+              <p className="text-2xl font-bold text-green-700">
+                {data?.orders_count}
+              </p>
             </div>
           </div>
         </div>
+
+        {/* Farmer Graph */}
+        {data?.is_farmer && (
+          <div className="mb-10">
+            <h2 className="text-xl font-semibold text-green-800 mb-4">
+              📊 Farmer Overview
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={farmerData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" fill="#16a34a" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {/* Buyer Graph */}
+        {data?.is_buyer && (
+          <div>
+            <h2 className="text-xl font-semibold text-green-800 mb-4">
+              📈 Buyer Order History
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={buyerOrders}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="orders" stroke="#2563eb" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
     </div>
   );
