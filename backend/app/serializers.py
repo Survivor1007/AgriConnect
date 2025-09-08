@@ -41,6 +41,7 @@ class FarmProductSerializer(serializers.ModelSerializer):
 # Order Serializer
 # --------------------------
 class OrderSerializer(serializers.ModelSerializer):
+    ordered_at = serializers.DateTimeField(source="created_at", read_only=True)
     buyer = UserSerializer(read_only=True)
     product = FarmProductSerializer(read_only=True)
     product_id = serializers.PrimaryKeyRelatedField(
@@ -60,6 +61,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "total_price",
             "status",
             "created_at",
+            "ordered_at",
         ]
         read_only_fields = ["total_price", "status", "created_at"]
 

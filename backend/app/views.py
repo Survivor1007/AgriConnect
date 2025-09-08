@@ -1,4 +1,4 @@
-from rest_framework import permissions, viewsets, generics,status
+from rest_framework import permissions, viewsets, generics,status,serializers
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -38,7 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
       
 
 class FarmerProductViewSet(viewsets.ModelViewSet):
-      queryset = User.objects.all()
+      queryset = FarmProduct.objects.all()
       serializer_class = FarmProductSerializer
       permission_classes = [permissions.IsAuthenticated]
 
@@ -52,6 +52,12 @@ class FarmerProductViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if getattr(user, "is_farmer", False):
             return FarmProduct.objects.filter(farmer=user)
+        if getattr(user, "is_buyer", False):
+            return FarmProduct.objects.filter(
+                available=True,
+                farmer__location=user.location  # ✅ filter by farmer’s location
+            )
+
         return FarmProduct.objects.filter(available=True)
 
 
@@ -60,19 +66,29 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def perform_create(self, serializer):
-        # Automatically set buyer to the logged-in user
-        serializer.save(buyer=self.request.user)
-
     def get_queryset(self):
         user = self.request.user
         if getattr(user, "is_farmer", False):
-            # Farmers see orders for their products
+            # Show orders of farmer’s products
             return Order.objects.filter(product__farmer=user)
-        else:
-            # Buyers see only their orders
-            return Order.objects.filter(buyer=user)
+        return Order.objects.filter(buyer=user)
 
+    def perform_create(self, serializer):
+        product = serializer.validated_data["product"]
+        quantity = serializer.validated_data["quantity"]
+
+        if quantity > product.quantity:
+            raise serializers.ValidationError(
+                {"quantity": f"Only {product.quantity} {product.unit} available"}
+            )
+
+        product.quantity -= quantity
+        product.save()
+
+        serializer.save(
+            buyer=self.request.user,
+            total_price=quantity * product.price_per_unit
+        )
 
 # --------------------------
 # Weather Report ViewSet

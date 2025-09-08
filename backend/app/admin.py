@@ -7,7 +7,7 @@ from .models import User,Order,FarmProduct,WeatherReport,FarmingUpdate
 @admin.register(User)   # instead of admin.site.register(User, CustomUserAdmin)
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ("username", "email", "is_farmer", "is_buyer", "is_staff", "is_superuser")
+    list_display = ("username", "email", "is_farmer", "is_buyer", "is_staff", "is_superuser","location")
     list_filter = ("is_farmer", "is_buyer", "is_staff", "is_superuser")
     search_fields = ("username", "email", "phone_number")
     ordering = ("username",)
